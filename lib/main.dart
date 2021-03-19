@@ -1,38 +1,90 @@
-import "package:flutter/material.dart";
+import 'dart:math';
 
-void main()
-{
-  runApp(myApp());
-} 
+import 'package:flutter/material.dart';
 
-class myApp extends StatelessWidget {
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
-      title:"Text Field",
-      theme:ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: myhomepage(),
-
+      title: "My Calculator",
+      theme: ThemeData(primarySwatch: Colors.red),
+      home: MyHomePage(),
     );
   }
 }
 
-class myhomepage extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
   @override
-  _myhomepageState createState() => _myhomepageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _myhomepageState extends State<myhomepage> {
+class _MyHomePageState extends State<MyHomePage> {
 
-  String name="";
-  void greet()
+  double num1=0,num2=0;
+  String result="";
+  String operation="";
+  String textToDisplay="";
+
+  void btnClicked(String btnVal)
   {
+    if(btnVal=='C')
+    {
+      num1=0;
+      num2=0;
+      result="";
+    }
+    else if(btnVal=='+'||btnVal=='-'||btnVal=='x'||btnVal=='/'||btnVal=='^'||btnVal=='%')
+    {
+      num1=double.parse(result);
+      operation=btnVal;
+      result="";
+    }
+    else if(btnVal=='<X>' && result.length>0)
+    {      
+      result=result.substring(0,result.length-1);
+    }
+    else if(btnVal=='='){
+      num2=double.parse(result);
+      switch(operation){
+        case '+':result=(num1+num2).toString();break;
+        case '-':result=(num1-num2).toString();break;
+        case 'x':result=(num1*num2).toString();break;
+        case '/':result=(num1/num2).toString();break;
+        case '%':result=(num1%num2).toString();break;
+        case '^':result=(pow(num1, num2)).toString();break;
+      }
+    }
+    else if(btnVal!='<X>' )
+    {
+      result=result+btnVal;
+    }
+
+
     setState(() {
-      name="Hello $name";
+      textToDisplay=result;
     });
+  }
+
+
+  Widget customButton(String btnVal)
+  {
+    return (
+      Expanded(
+        child: OutlineButton(
+         padding:EdgeInsets.all(25.0),
+          onPressed:()=>btnClicked(btnVal),
+          child: Text(
+            "$btnVal",
+            style: TextStyle(
+                fontSize: 25.0
+            )
+
+          ),
+        ),
+      )
+    );
   }
 
   @override
@@ -40,48 +92,77 @@ class _myhomepageState extends State<myhomepage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "INPUT",
+          "CALCULATOR",
+          style:TextStyle(
+            color: Colors.white,
+            fontSize:30.0,
+            fontFamily:"Harlow Solid Italic" ,
+          )
         ),
-        
+        // toolbarHeight: 80,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
 
-          Text(
-            " $name",
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.red,
-            ),
-          ),
+      body: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children:<Widget> [
 
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: TextField(
-              onChanged: (text){
-                name=text;
-              },
-              style:TextStyle(
-                color:Colors.green[400],
-                fontSize: 20.0
-              ),
-              decoration: InputDecoration(
-                hintText: "Enter Your Name",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_box),
+            Container(
+              
+              alignment: Alignment.bottomRight,
+              padding:EdgeInsets.all(12),
+              child: 
+              Text(
+                "$textToDisplay",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.w600,
+                ),
+
               ),
             ),
-          ),
-          FlatButton(
-            onPressed: greet,
-            color: Colors.black,
-            child: Text(
-              "GREET",
-              style: TextStyle(color: Colors.white,fontSize: 25.0),
+            Row(
+              children: <Widget>[
+                customButton("C"),
+                customButton("^"),
+                customButton("%"),
+                customButton("/"),
+              ],
             ),
-          ),
-        ],
+            Row(
+              children: <Widget>[
+                customButton("7"),
+                customButton("8"),
+                customButton("9"),
+                customButton("x"),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                customButton("4"),
+                customButton("5"),
+                customButton("6"),
+                customButton("-"),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                customButton("1"),
+                customButton("2"),
+                customButton("3"),
+                customButton("+"),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                customButton("<X>"),
+                customButton("0"),
+                customButton("."),
+                customButton("="),
+              ],
+            ),
+          ],
+        )
       ),
     );
   }
